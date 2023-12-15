@@ -1,0 +1,142 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Node
+{
+	char name[20],id[20],gender[20],phone[20],email[20];
+};
+
+void deleteStudent()
+{
+	FILE *fread,*fwrite;
+	char *TextFile;
+	char c;
+	
+	int Delete_Id,temp=1;
+	TextFile="output.txt";
+	fread=fopen(TextFile,"r");
+	rewind(fread);
+	printf("\n Delete student id:");
+	scanf("%d",&Delete_Id);
+	Delete_Id=Delete_Id+1;
+	
+	fwrite=fopen("copy.c","w");
+	c=getc(fread);
+	
+	while(c!=EOF)
+	{
+		c=getc(fread);
+		if(c=='\n')
+		temp++;
+		
+		if(temp!=Delete_Id)
+		{
+			putc(c,fwrite);
+		}
+	}
+	
+	fclose(fread);
+	fclose(fwrite);
+	remove(TextFile);
+	rename("copy.c",TextFile);
+}
+
+void Export_Profile(struct Node profile)
+{
+	FILE *fptr1;
+	fptr1=fopen("output.txt","a+");
+	if(fptr1==NULL)
+	{
+		printf("\n Error in openning file \n");
+		exit(-1);
+	}
+	fprintf(fptr1,"%10s %10s %10s %10s %10s\n",profile.id,profile.name,profile.phone,profile.email,profile.gender);
+	fclose(fptr1);	
+}
+void print_Profile()
+{
+	FILE *fptr1;
+	struct Node profile;
+	fptr1=fopen("output.txt","r");
+	if(fptr1==NULL)
+	{
+		printf("Error in opening file\n");
+		exit(-1);
+	}
+	
+	while(!feof(fptr1))
+	{
+		fscanf(fptr1,"%10s %10s %10s %10s %10s\n",profile.id,profile.name,profile.phone,profile.email,profile.gender);
+		printf("%10s %10s %10s %10s %10s\n",profile.id,profile.name,profile.phone,profile.email,profile.gender);
+	}
+		fclose(fptr1);
+}
+
+void newStudent()
+{
+	int x;
+	struct Node st;
+	printf("\n=== Add New Student Profile===");
+	printf("\n\n please enter the following student information:");
+	printf("\n\n Student ID:");
+	scanf("%s",st.id);
+	printf("Name\t: ");
+	fflush(stdin);
+	fgets(st.name,20,stdin);
+	for(x=0;x<20;x++)
+	{
+		if(st.name[x]=='\n')
+		st.name[x]='\0';
+	}
+	printf("gender\t: ");
+	scanf("%s",st.gender);
+	printf("Phone\t: ");
+	scanf("%s",st.phone);
+	printf("email\t: ");
+	scanf("%s",st.email);
+	
+	Export_Profile(st);
+}
+
+void menu()
+{
+	int n;
+	printf("\n ***********************************");
+	printf("\n STUDENT INFORMATION ");
+	printf("\n ***********************************");
+	printf("\n 1.add student ");
+	printf("\n 2.delete student ");
+	printf("\n 3.Export all profile to'output.txt'");
+	printf("\n 4.Exit");
+	printf("\n enter your choice");
+	scanf("%d",&n);
+	switch(n)
+	
+	{
+		case 1:
+			newStudent();
+			break;
+		case 2:
+			deleteStudent();
+			break;
+		case 3:
+			print_Profile();
+			break;
+		case 4:
+			exit(0);
+	}
+}
+int main(void)
+{
+	int a;
+	FILE *fp;
+	fp=fopen("output.txt","w");
+	fclose(fp);
+	for(a=0;;a++)
+	{
+		menu();
+	}
+	return 0;
+}
+	
+
